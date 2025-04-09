@@ -6,16 +6,17 @@ public class Inventory {
         Scanner input  = new Scanner(System.in);
 
         //int longitudCategoria = categorias.length;
+        final int TAMAÑO_COLUMNA = 3;
         
         String[] categorias = {"Alimentos", "Limpieza"};
 
-        String[][] nombres = new String[categorias.length][3];
-        int[][] cantidades = new int[categorias.length][3];
-        double[][] precios = new double[categorias.length][3];
+        String[][] nombres = new String[categorias.length][TAMAÑO_COLUMNA];
+        int[][] cantidades = new int[categorias.length][TAMAÑO_COLUMNA];
+        double[][] precios = new double[categorias.length][TAMAÑO_COLUMNA];
 
         for (int i = 0; i < categorias.length; i++) {
             System.out.println("Categorias: " + categorias[i]);
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < TAMAÑO_COLUMNA; j++) {
                 System.out.println("ingrese el nombre del producto " + (j + 1) + ": ");
                 nombres[i][j] = input.nextLine();
                 
