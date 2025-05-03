@@ -1,19 +1,13 @@
 import java.util.Scanner;
 
-public class Main {
+public class prueba {
     private static final int MAX_PRODUCTOS = 10;
-
+    // Constantes para categorías
     private static final int MAX_CATEGORIAS = 5;
-    private static final int MAX_SECCIONES = 5;
-    private static final int MAX_PRODUCTOS_POR_SECCION = 20;
-
-
+    
+    // Nombres de categorías
     private static final String[] CATEGORIAS = {
             "Alimentos", "Bebidas", "Limpieza", "Electrónica", "Ropa"
-    };
-
-    private static final String[] SECCIONES = {
-            "Principal", "Secundaria", "Promoción", "Temporada", "Especial"
     };
 
     private static String[] nombres = new String[MAX_PRODUCTOS];
@@ -21,15 +15,13 @@ public class Main {
     private static double[] precios = new double[MAX_PRODUCTOS];
     private static double[] valoresTotal = new double[MAX_PRODUCTOS];
 
-    private static int[] categoriaProducto = new int[MAX_PRODUCTOS]; 
-    private static int[] seccionProducto = new int[MAX_PRODUCTOS]; 
+    // Array para almacenar la información por categoría
+    private static int[] categoriaProducto = new int[MAX_PRODUCTOS]; // Categoría de cada producto
 
-    private static int[][][] productosPorCategoriaSeccion = new int[MAX_CATEGORIAS][MAX_SECCIONES][MAX_PRODUCTOS_POR_SECCION];
-
-    private static int[][] contadorProductosPorCS = new int[MAX_CATEGORIAS][MAX_SECCIONES];
-
+    // Variable para llevar cuenta de cuántos productos hay en el sistema
     private static int cantidadProductos = 0;
 
+    // Scanner para entrada de datos
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -60,27 +52,37 @@ public class Main {
             }
         }
 
+        // Cerrar el scanner al finalizar
         scanner.close();
     }
 
+    /**
+     * Muestra el menú principal de la aplicación
+     */
     private static void showMenu() {
         System.out.println("\n===== SISTEMA DE INVENTARIO =====");
         System.out.println("1. Agregar un nuevo producto");
         System.out.println("2. Actualizar cantidad de un producto");
         System.out.println("3. Generar reporte de inventario general");
-        System.out.println("4. Generar reporte por categoría y sección");
+        System.out.println("4. Generar reporte por categoría");
         System.out.println("5. Salir");
         System.out.print("Seleccione una opción: ");
     }
 
+    /**
+     * Lee la opción seleccionada por el usuario
+     */
     private static int leerOpcion() {
         try {
             return Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
-            return -1; 
+            return -1; // Opción inválida
         }
     }
 
+    /**
+     * Agrega un nuevo producto al inventario
+     */
     private static void addProduct() {
         if (cantidadProductos >= MAX_PRODUCTOS) {
             System.out.println("\nEl inventario está lleno. No se pueden agregar más productos.");
@@ -124,36 +126,29 @@ public class Main {
             }
         }
 
+        // Seleccionar categoría para el producto
         int categoria = seleccionarCategoria();
 
-        int seccion = seleccionarSeccion();
-
-        if (contadorProductosPorCS[categoria][seccion] >= MAX_PRODUCTOS_POR_SECCION) {
-            System.out.println("\nNo hay más espacio en esta categoría y sección. Por favor, elija otra combinación.");
-            return;
-        }
-
+        // Guardar el nuevo producto
         nombres[cantidadProductos] = nombre;
         cantidades[cantidadProductos] = cantidad;
         precios[cantidadProductos] = precio;
         valoresTotal[cantidadProductos] = cantidad * precio;
 
+        // Guardar la categoría del producto
         categoriaProducto[cantidadProductos] = categoria;
-        seccionProducto[cantidadProductos] = seccion;
-
-        int indiceCS = contadorProductosPorCS[categoria][seccion];
-        productosPorCategoriaSeccion[categoria][seccion][indiceCS] = cantidadProductos;
-        contadorProductosPorCS[categoria][seccion]++;
 
         System.out.println("\nProducto agregado exitosamente:");
         System.out.printf("Producto: %s - Cantidad: %d - Precio por unidad: %.2f - Valor total: %.2f\n",
                 nombre, cantidad, precio, valoresTotal[cantidadProductos]);
-        System.out.printf("Categoría: %s - Sección: %s\n",
-                CATEGORIAS[categoria], SECCIONES[seccion]);
+        System.out.printf("Categoría: %s\n", CATEGORIAS[categoria]);
 
         cantidadProductos++;
     }
 
+    /**
+     * Muestra las categorías disponibles y solicita al usuario seleccionar una
+     */
     private static int seleccionarCategoria() {
         System.out.println("\nCategorías disponibles:");
         for (int i = 0; i < CATEGORIAS.length; i++) {
@@ -178,30 +173,9 @@ public class Main {
         return categoria;
     }
 
-    private static int seleccionarSeccion() {
-        System.out.println("\nSecciones disponibles:");
-        for (int i = 0; i < SECCIONES.length; i++) {
-            System.out.printf("%d. %s\n", (i + 1), SECCIONES[i]);
-        }
-
-        int seccion = -1;
-        boolean seleccionValida = false;
-        while (!seleccionValida) {
-            System.out.print("Seleccione una sección (1-" + SECCIONES.length + "): ");
-            try {
-                seccion = Integer.parseInt(scanner.nextLine()) - 1;
-                if (seccion >= 0 && seccion < SECCIONES.length) {
-                    seleccionValida = true;
-                } else {
-                    System.out.println("Selección inválida. Intente nuevamente.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Por favor, ingrese un número válido.");
-            }
-        }
-        return seccion;
-    }
-
+    /**
+     * Actualiza la cantidad de un producto existente
+     */
     private static void updateQuantity() {
         if (cantidadProductos == 0) {
             System.out.println("\nNo hay productos en el inventario.");
@@ -210,13 +184,15 @@ public class Main {
 
         System.out.println("\n----- ACTUALIZAR CANTIDAD DE PRODUCTO -----");
 
+        // Mostrar productos disponibles
         System.out.println("Productos disponibles:");
         for (int i = 0; i < cantidadProductos; i++) {
-            System.out.printf("%d. %s (Cantidad actual: %d) - Categoría: %s, Sección: %s\n",
+            System.out.printf("%d. %s (Cantidad actual: %d) - Categoría: %s\n",
                     (i + 1), nombres[i], cantidades[i],
-                    CATEGORIAS[categoriaProducto[i]], SECCIONES[seccionProducto[i]]);
+                    CATEGORIAS[categoriaProducto[i]]);
         }
 
+        // Seleccionar producto a actualizar
         int indice = -1;
         boolean seleccionValida = false;
         while (!seleccionValida) {
@@ -233,6 +209,7 @@ public class Main {
             }
         }
 
+        // Ingresar nueva cantidad
         int nuevaCantidad = 0;
         boolean cantidadValida = false;
         while (!cantidadValida) {
@@ -250,6 +227,7 @@ public class Main {
             }
         }
 
+        // Actualizar cantidad y valor total
         cantidades[indice] = nuevaCantidad;
         valoresTotal[indice] = cantidades[indice] * precios[indice];
 
@@ -258,6 +236,9 @@ public class Main {
                 nombres[indice], cantidades[indice], valoresTotal[indice]);
     }
 
+    /**
+     * Genera un reporte del inventario
+     */
     private static void generateReport() {
         if (cantidadProductos == 0) {
             System.out.println("\nNo hay productos en el inventario.");
@@ -269,83 +250,82 @@ public class Main {
         double valorTotalInventario = 0;
 
         System.out.println("\nLista de productos:");
-        System.out.println("----------------------------------------------------------------------------------------------");
-        System.out.printf("%-20s %-15s %-15s %-15s %-15s %-15s\n",
-                "PRODUCTO", "CANTIDAD", "PRECIO UNIT.", "VALOR TOTAL", "CATEGORÍA", "SECCIÓN");
-        System.out.println("----------------------------------------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------------");
+        System.out.printf("%-20s %-15s %-15s %-15s %-15s\n",
+                "PRODUCTO", "CANTIDAD", "PRECIO UNIT.", "VALOR TOTAL", "CATEGORÍA");
+        System.out.println("------------------------------------------------------------------");
 
         for (int i = 0; i < cantidadProductos; i++) {
-            System.out.printf("%-20s %-15d $%-14.2f $%-14.2f %-15s %-15s\n",
+            System.out.printf("%-20s %-15d $%-14.2f $%-14.2f %-15s\n",
                     nombres[i], cantidades[i], precios[i], valoresTotal[i],
-                    CATEGORIAS[categoriaProducto[i]], SECCIONES[seccionProducto[i]]);
+                    CATEGORIAS[categoriaProducto[i]]);
             valorTotalInventario += valoresTotal[i];
         }
 
-        System.out.println("----------------------------------------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------------");
         System.out.printf("VALOR TOTAL DEL INVENTARIO: $%.2f\n", valorTotalInventario);
-        System.out.println("----------------------------------------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------------");
     }
 
+    /**
+     * Genera un reporte del inventario organizado por categoría
+     */
     private static void generateReportByCategory() {
         if (cantidadProductos == 0) {
             System.out.println("\nNo hay productos en el inventario.");
             return;
         }
 
-        System.out.println("\n========== REPORTE DE INVENTARIO POR CATEGORÍA Y SECCIÓN ==========");
+        System.out.println("\n========== REPORTE DE INVENTARIO POR CATEGORÍA ==========");
 
         double valorTotalInventario = 0;
 
+        // Recorrer cada categoría
         for (int cat = 0; cat < MAX_CATEGORIAS; cat++) {
-            boolean tieneCategoriaProductos = false;
+            boolean tieneProductos = false;
 
-            for (int sec = 0; sec < MAX_SECCIONES; sec++) {
-                if (contadorProductosPorCS[cat][sec] > 0) {
-                    tieneCategoriaProductos = true;
+            // Verificar si hay productos en esta categoría
+            for (int i = 0; i < cantidadProductos; i++) {
+                if (categoriaProducto[i] == cat) {
+                    tieneProductos = true;
                     break;
                 }
             }
 
-            if (!tieneCategoriaProductos) {
-                continue;  
+            if (!tieneProductos) {
+                continue;  // Saltar esta categoría si no tiene productos
             }
 
             System.out.printf("\n== CATEGORÍA: %s ==\n", CATEGORIAS[cat]);
+            System.out.println("--------------------------------------------------");
+            System.out.printf("%-20s %-15s %-15s %-15s\n",
+                    "PRODUCTO", "CANTIDAD", "PRECIO UNIT.", "VALOR TOTAL");
+            System.out.println("--------------------------------------------------");
 
-            for (int sec = 0; sec < MAX_SECCIONES; sec++) {
-                int numProductos = contadorProductosPorCS[cat][sec];
+            double valorTotalCategoria = 0;
 
-                if (numProductos > 0) {
-                    System.out.printf("\n-- SECCIÓN: %s --\n", SECCIONES[sec]);
-                    System.out.println("-------------------------------------------------------------");
-                    System.out.printf("%-20s %-15s %-15s %-15s\n",
-                            "PRODUCTO", "CANTIDAD", "PRECIO UNIT.", "VALOR TOTAL");
-                    System.out.println("-------------------------------------------------------------");
+            // Recorrer productos de esta categoría
+            for (int i = 0; i < cantidadProductos; i++) {
+                if (categoriaProducto[i] == cat) {
+                    System.out.printf("%-20s %-15d $%-14.2f $%-14.2f\n",
+                            nombres[i],
+                            cantidades[i],
+                            precios[i],
+                            valoresTotal[i]);
 
-                    double valorTotalSeccion = 0;
-
-                    for (int i = 0; i < numProductos; i++) {
-                        int indiceProducto = productosPorCategoriaSeccion[cat][sec][i];
-                        System.out.printf("%-20s %-15d $%-14.2f $%-14.2f\n",
-                                nombres[indiceProducto],
-                                cantidades[indiceProducto],
-                                precios[indiceProducto],
-                                valoresTotal[indiceProducto]);
-
-                        valorTotalSeccion += valoresTotal[indiceProducto];
-                    }
-
-                    System.out.println("-------------------------------------------------------------");
-                    System.out.printf("VALOR TOTAL DE LA SECCIÓN: $%.2f\n", valorTotalSeccion);
-                    System.out.println("-------------------------------------------------------------");
-
-                    valorTotalInventario += valorTotalSeccion;
+                    valorTotalCategoria += valoresTotal[i];
                 }
             }
+
+            System.out.println("--------------------------------------------------");
+            System.out.printf("VALOR TOTAL DE LA CATEGORÍA: $%.2f\n", valorTotalCategoria);
+            System.out.println("--------------------------------------------------");
+
+            valorTotalInventario += valorTotalCategoria;
         }
 
-        System.out.println("\n-------------------------------------------------------------");
+        System.out.println("\n--------------------------------------------------");
         System.out.printf("VALOR TOTAL DEL INVENTARIO: $%.2f\n", valorTotalInventario);
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("--------------------------------------------------");
     }
 }
